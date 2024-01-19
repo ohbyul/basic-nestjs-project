@@ -5,6 +5,7 @@ import { Board } from './boards/board.entity';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { User } from './user/user.entity';
+import * as config from 'config';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
