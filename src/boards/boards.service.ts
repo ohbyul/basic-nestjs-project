@@ -5,6 +5,7 @@ import { Board } from './board.entity';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { BoardStatus } from './board.model';
 import { Repository } from 'typeorm';
+import { User } from 'src/user/user.entity';
 
 @Injectable()
 export class BoardsService {
@@ -12,12 +13,17 @@ export class BoardsService {
         private readonly boardRepository: BoardRepository,
     ) { }
 
-    async getAllBoards(): Promise<Board[]> {
-        return this.boardRepository.find();
+    async getAllBoards(user: User): Promise<Board[]> {
+        const query = this.boardRepository.createQueryBuilder('board');
+        query.where('board.userId = :userId', { userId: user.id })
+
+        const boards = await query.getMany()
+        return boards;
+        // return this.boardRepository.find();
     }
 
-    createBoard(createBoardDto: CreateBoardDto): Promise<Board> {
-        return this.boardRepository.createBoard(createBoardDto)
+    createBoard(createBoardDto: CreateBoardDto, user: User): Promise<Board> {
+        return this.boardRepository.createBoard(createBoardDto, user)
     }
 
 
@@ -30,8 +36,8 @@ export class BoardsService {
         return result
     }
 
-    deleteBoard(id: number): Promise<void> {
-        return this.boardRepository.deleteBoard(id)
+    deleteBoard(id: number, user: User): Promise<void> {
+        return this.boardRepository.deleteBoard(id, user)
     }
 
     async updateBoardStatus(id: number, status: BoardStatus): Promise<Board> {
